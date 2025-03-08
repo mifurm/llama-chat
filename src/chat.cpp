@@ -6,10 +6,6 @@
 #include "./parse_json.h"
 
 
-//////////////////////////////////////////////////////////////////////////
-////////////                    ANIMATION                     ////////////
-//////////////////////////////////////////////////////////////////////////
-
 std::atomic<bool> stop_display{false}; 
 
 void display_frames() {
@@ -29,34 +25,21 @@ void display_frames() {
 }
 
 void display_loading() {
-
     while (!stop_display) {
-
-
         for (int i=0; i < 10; i++){
                 fprintf(stdout, ".");
                 fflush(stdout);
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 if (stop_display){ break; }
         }
-        
-            std::cout << "\r" << "           " << "\r" << std::flush;
+        std::cout << "\r" << "           " << "\r" << std::flush;
     }
     std::cout << "\r" << " " << std::flush;
-
 }
 
 
-//////////////////////////////////////////////////////////////////////////
-////////////                    ANIMATION                     ////////////
-//////////////////////////////////////////////////////////////////////////
 
-
-
-//////////////////////////////////////////////////////////////////////////
-////////////                 LLAMA FUNCTIONS                  ////////////
-//////////////////////////////////////////////////////////////////////////
-
+//params for the model
 void update_struct(LLModel::PromptContext  &prompt_context, GPTJParams &params){
     // TODO: handle this better
     prompt_context.n_predict = params.n_predict;
@@ -82,26 +65,13 @@ void printPromptContext(LLModel::PromptContext& context) {
     std::cout << std::endl;
 }
 
-//////////////////////////////////////////////////////////////////////////
-////////////                 LLAMA FUNCTIONS                  ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////
-////////////                 CHAT FUNCTIONS                   ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
 
 std::string get_input(ConsoleState& con_st, LLamaModel llama_model, std::string& input) {
-    set_console_color(con_st, USER_INPUT);
+    //set_console_color(con_st, USER_INPUT);
 
     std::cout << "\n> ";
     std::getline(std::cin, input);
-    set_console_color(con_st, DEFAULT);
+    //set_console_color(con_st, DEFAULT);
 
     if (input == "exit" || input == "quit") {
         //free_model(llama_model);
@@ -112,30 +82,18 @@ std::string get_input(ConsoleState& con_st, LLamaModel llama_model, std::string&
     return input;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-////////////                 CHAT FUNCTIONS                   ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
-
-//////////////////////////////////////////////////////////////////////////
-////////////                  MAIN PROGRAM                    ////////////
-//////////////////////////////////////////////////////////////////////////
-
-
 int main(int argc, char* argv[]) {
 
 
     ConsoleState con_st;
     con_st.use_color = true;
-    set_console_color(con_st, DEFAULT);
+    //set_console_color(con_st, DEFAULT);
 
     bool interactive = true;
     bool continuous = true;
 
     std::string response;
-    response.reserve(10000);
+    //response.reserve(10000);
     int memory = 200;
     GPTJParams params;
     std::string prompt = "";
@@ -143,21 +101,18 @@ int main(int argc, char* argv[]) {
     std::string answer = "";
    
 
-    set_console_color(con_st, PROMPT);
-    set_console_color(con_st, BOLD);
+    //set_console_color(con_st, PROMPT);
+    //set_console_color(con_st, BOLD);
     std::cout << "llama-chat";
-    set_console_color(con_st, DEFAULT);
-    set_console_color(con_st, PROMPT);
+    //set_console_color(con_st, DEFAULT);
+    //set_console_color(con_st, PROMPT);
     std::cout << " (v. " << version << ")";
-    set_console_color(con_st, DEFAULT);
+    //set_console_color(con_st, DEFAULT);
     std::cout << "" << std::endl;
     
     parse_params(argc, argv, params, prompt, interactive, continuous, memory);
 
-
-
     bool use_animation = true;
-
 
     LLamaModel llama_model;
 
@@ -171,7 +126,7 @@ int main(int argc, char* argv[]) {
     #else
         int stderr_copy = dup(fileno(stderr));
         std::freopen("/dev/null", "w", stderr);
-     #endif
+    #endif
 
     std::cout << "\r" << "llama-chat: loading " << params.model.c_str()  << std::endl;
     auto check_llama = llama_model.loadModel( params.model.c_str() );
@@ -200,22 +155,15 @@ int main(int argc, char* argv[]) {
         std::cout << "\r" << "llama-chat: done loading!" << std::flush;   
     }
 
-    set_console_color(con_st, PROMPT);
+    //set_console_color(con_st, PROMPT);
     std::cout << " " << prompt.c_str() << std::endl;
-    set_console_color(con_st, DEFAULT);
+    //set_console_color(con_st, DEFAULT);
 
     std::string default_prefix = "### Instruction:\n The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.";
     std::string default_header = "\n### Prompt: ";
     std::string default_footer = "\n### Response: ";
   
   
-  
-    //////////////////////////////////////////////////////////////////////////
-    ////////////            PROMPT LAMBDA FUNCTIONS               ////////////
-    //////////////////////////////////////////////////////////////////////////
-
-
-
 	auto lambda_prompt = [](int32_t token_id) {
 	        // You can handle prompt here if needed
 	        //std::cout << token_id << std::flush;
@@ -250,10 +198,6 @@ int main(int argc, char* argv[]) {
 	    return true;
 	};
 
-
-    //////////////////////////////////////////////////////////////////////////
-    ////////////            PROMPT LAMBDA FUNCTIONS               ////////////
-    //////////////////////////////////////////////////////////////////////////
 
   	//create PromptContext and update fields from params struct.
     LLModel::PromptContext  prompt_context;
@@ -303,7 +247,7 @@ int main(int argc, char* argv[]) {
 
 
 
-    set_console_color(con_st, DEFAULT);
+    //set_console_color(con_st, DEFAULT);
     printPromptContext(prompt_context);
     llama_model.~LLamaModel();
 
